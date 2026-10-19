@@ -1,0 +1,21 @@
+# Only the project itself is tracked. Everything else in this folder (the virtual environment, builds,
+# test data and outputs, older analysis scripts and images) stays local.
+/*
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/LICENSE
+!/LICENSES/
+!/THIRD-PARTY-NOTICES.txt
+!/pyproject.toml
+!/requirements.txt
+!/run.bat
+!/gpustacker/
+!/siril/
+!/tools/
+!/tests/
+!/docs/
+
+__pycache__/
+*.pyc
+*.partial

@@ -1,0 +1,124 @@
+GPU Stacker - copyright and license notices
+===========================================
+
+GPU Stacker
+Copyright (C) 2026 Jason Prater (JP Astrophotography)
+
+GPU Stacker is free software: you can redistribute it and/or modify it under the terms of the GNU
+General Public License as published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+GPU Stacker is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License (the file LICENSE) for more details.
+
+Below are the notices for code in GPU Stacker that comes from other projects, and for the programs
+and libraries included in the portable download. The license texts named here are in the LICENSES
+folder; the GNU General Public License itself is the file LICENSE.
+
+
+Code derived from other projects
+--------------------------------
+
+Siril - https://siril.org
+  Copyright (C) 2005-2011 Francois Meyer
+  Copyright (C) 2012-2026 team free-astro
+  License: GNU General Public License, version 3 or later (LICENSE)
+
+  GPU Stacker reproduces the stacking of Siril 1.4 so that its results match Siril's. Code ported
+  from Siril:
+  - pixel rejection and the weighted mean (stacking/rejection_float.c, stacking/median_and_mean.c,
+    algos/sorting.c): gpustacker/engine/reference.py, gpustacker/engine/kernels.py
+  - normalization statistics and the background noise estimate (algos/statistics_float.c,
+    algos/quantize.c): gpustacker/engine/stats.py, gpustacker/engine/kernels.py
+  - normalization coefficients and frame weights: gpustacker/engine/job.py, gpustacker/engine/kernels.py
+  - feather masks (stacking/blending.c, opencv/opencv.cpp): gpustacker/engine/masks.py
+  - registered sequences and their framing: gpustacker/engine/sequence.py
+  The Siril script (siril/GPU Stacker/GPU-Stacker.py) uses Siril's sirilpy module, which comes with
+  Siril (GNU General Public License, version 3 or later).
+
+RawTherapee - https://rawtherapee.com
+  Copyright (c) 2017-2018 Ingo Weyrich
+  License: GNU General Public License, version 3 or later (LICENSE)
+
+  findMinMaxPercentile (rtengine/rt_algo.cc), which Siril uses for its histogram median:
+  gpustacker/engine/stats.py
+
+CFITSIO - https://heasarc.gsfc.nasa.gov/fitsio/
+  License: LICENSES/LicenseRef-CFITSIO.txt, reproduced at the end of this file
+
+  The FnNoise1 background noise estimate (quantize.c, after algorithms by Richard White at STScI,
+  as carried in Siril): gpustacker/engine/stats.py, gpustacker/engine/kernels.py
+
+OpenCV - https://opencv.org
+  Copyright (C) 2000-2022, Intel Corporation, all rights reserved.
+  Copyright (C) 2009-2011, Willow Garage Inc., all rights reserved.
+  Copyright (C) 2009-2016, NVIDIA Corporation, all rights reserved.
+  Copyright (C) 2010-2013, Advanced Micro Devices, Inc., all rights reserved.
+  Copyright (C) 2015-2023, OpenCV Foundation, all rights reserved.
+  Copyright (C) 2008-2016, Itseez Inc., all rights reserved.
+  Copyright (C) 2019-2023, Xperience AI, all rights reserved.
+  Copyright (C) 2019-2022, Shenzhen Institute of Artificial Intelligence and Robotics for Society, all rights reserved.
+  Copyright (C) 2022-2023, Southern University of Science And Technology, all rights reserved.
+  Copyright (C) 2023-2025, OpenCV AI, all rights reserved.
+  Third party copyrights are property of their respective owners.
+  License: Apache License, Version 2.0 (LICENSES/Apache-2.0.txt)
+
+  The fixed-point arithmetic of resize (INTER_LINEAR) and distanceTransform (DIST_L2, 3x3 mask),
+  which Siril uses for its feather masks: gpustacker/engine/masks.py
+
+
+Included in the portable download
+---------------------------------
+
+These programs and libraries are included unmodified; each one's license is in the folder given.
+
+- Python 3.12 - Python Software Foundation License: python\LICENSE.txt
+- NumPy - BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0:
+  python\Lib\site-packages\numpy-*.dist-info\licenses
+- CuPy - MIT: python\Lib\site-packages\cupy_cuda12x-*.dist-info\licenses
+- cuda-pathfinder - Apache-2.0: python\Lib\site-packages\cuda_pathfinder-*.dist-info\licenses
+- NVIDIA CUDA Runtime and NVRTC - NVIDIA Software License Agreement (redistributable components):
+  python\Lib\site-packages\nvidia_cuda_runtime_cu12-*.dist-info and nvidia_cuda_nvrtc_cu12-*.dist-info
+- Qt for Python (PySide6 and Shiboken6, with the Qt libraries they contain) - used under the GNU
+  Lesser General Public License, version 3 (LICENSES/LGPL-3.0.txt, with the GNU GPL in LICENSE).
+  They are unmodified and loaded as separate libraries from python\Lib\site-packages\PySide6 and
+  shiboken6, so they can be replaced with other interface-compatible versions. Qt itself contains
+  third-party components under their own licenses: https://doc.qt.io/qt-6/licenses-used-in-qt.html
+
+
+Source code
+-----------
+
+The complete source code of GPU Stacker, with its tests and the script that builds the download, is
+included in the download (the app folder).
+
+
+CFITSIO license (LICENSES/LicenseRef-CFITSIO.txt)
+-------------------------------------------------
+
+Copyright (Unpublished--all rights reserved under the copyright laws of
+the United States), U.S. Government as represented by the Administrator
+of the National Aeronautics and Space Administration.  No copyright is
+claimed in the United States under Title 17, U.S. Code.
+
+Permission to freely use, copy, modify, and distribute this software
+and its documentation without fee is hereby granted, provided that this
+copyright notice and disclaimer of warranty appears in all copies.
+
+DISCLAIMER:
+
+THE SOFTWARE IS PROVIDED 'AS IS' WITHOUT ANY WARRANTY OF ANY KIND,
+EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO,
+ANY WARRANTY THAT THE SOFTWARE WILL CONFORM TO SPECIFICATIONS, ANY
+IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, AND FREEDOM FROM INFRINGEMENT, AND ANY WARRANTY THAT THE
+DOCUMENTATION WILL CONFORM TO THE SOFTWARE, OR ANY WARRANTY THAT THE
+SOFTWARE WILL BE ERROR FREE.  IN NO EVENT SHALL NASA BE LIABLE FOR ANY
+DAMAGES, INCLUDING, BUT NOT LIMITED TO, DIRECT, INDIRECT, SPECIAL OR
+CONSEQUENTIAL DAMAGES, ARISING OUT OF, RESULTING FROM, OR IN ANY WAY
+CONNECTED WITH THIS SOFTWARE, WHETHER OR NOT BASED UPON WARRANTY,
+CONTRACT, TORT , OR OTHERWISE, WHETHER OR NOT INJURY WAS SUSTAINED BY
+PERSONS OR PROPERTY OR OTHERWISE, AND WHETHER OR NOT LOSS WAS SUSTAINED
+FROM, OR AROSE OUT OF THE RESULTS OF, OR USE OF, THE SOFTWARE OR
+SERVICES PROVIDED HEREUNDER.

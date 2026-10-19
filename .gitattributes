@@ -1,0 +1,8 @@
+# Line endings: text files are stored with LF; batch files need CRLF for cmd.exe; license texts stay byte-exact.
+* text=auto
+*.bat text eol=crlf
+LICENSE text eol=lf
+LICENSES/** text eol=lf
+THIRD-PARTY-NOTICES.txt text eol=lf
+*.png binary
+*.jpg binary
