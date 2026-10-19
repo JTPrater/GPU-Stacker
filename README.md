@@ -1,17 +1,17 @@
 # GPU Stacker
 
-**Fast, free GPU stacking for Seestar subs and Siril sequences, with Siril-quality results.**
+**Fast, free GPU stacking for astro subs from any telescope (FITS lights or Siril sequences), with Siril-quality results.**
 
 ![GPU Stacker with 906 M45 subs: per-sub FWHM chart, stacking settings and frame list](docs/images/app-frames.png)
 
-GPU Stacker stacks astrophotography subs on an NVIDIA graphics card. Point it at a Seestar `lights`
-folder and it finds the stars, registers every sub (mosaics too), Bayer-drizzles them straight from the
-camera's colour pattern and stacks them with the same normalization and rejection math as Siril. It also
-stacks sequences you registered in Siril, producing the same result as Siril's own stack, and it runs
-from Siril's Scripts menu.
+GPU Stacker stacks astrophotography subs on an NVIDIA graphics card. Point it at a folder of FITS
+lights, from a Seestar or any other telescope and camera, and it finds the stars, registers every sub
+(mosaics too), drizzles them (colour cameras straight from their Bayer pattern) and stacks them with the
+same normalization and rejection math as Siril. It also stacks sequences you registered in Siril,
+producing the same result as Siril's own stack, and it runs from Siril's Scripts menu.
 
-> **Public test.** So far GPU Stacker has been tested on an RTX 3060 with Seestar S50 data. Reports from
-> other NVIDIA cards, other Seestar models and big datasets are very welcome: please
+> **Public test.** So far GPU Stacker has been tested on an RTX 3060 with Seestar S50 Pro data. Reports
+> from other NVIDIA cards, telescopes and cameras, and from big datasets, are very welcome: please
 > [open an issue](../../issues), and attach `%LOCALAPPDATA%\GPU Stacker\gpu-stacker.log` if something
 > goes wrong.
 
@@ -24,10 +24,21 @@ minute longer while the GPU code is prepared.
 **You need** Windows 10 or 11 (64-bit) and an NVIDIA graphics card (GTX 10-series or newer) with a
 current driver. AMD, Intel and Mac graphics are not supported.
 
+## What it works with
+
+- **Lights:** FITS files (`.fit`, `.fits`, `.fts`; 8- or 16-bit, or 32-bit float) from colour (one-shot
+  colour) or mono cameras, or already debayered RGB. A Seestar's `lights` folder works as it is, and so
+  do subs from any capture program that saves FITS. Meridian flips are fine.
+- **One filter per folder.** Frames are not sorted by filter, so give each filter's subs (L, R, G, B,
+  Ha...) their own folder.
+- **No calibration frames yet.** Raw lights are stacked as they are, without darks, flats or bias. If
+  your setup needs calibration, calibrate and register in Siril, then let GPU Stacker stack the
+  registered sequence. Siril is also the way in for DSLR and mirrorless raw files (CR2, NEF, ARW...).
+
 ## What it does
 
-- **Raw lights in, stack out.** Star detection, registration (mosaics included), Bayer drizzle from the
-  CFA data and stacking, without writing any intermediate files.
+- **Raw lights in, stack out.** Star detection, registration (mosaics included), drizzle (Bayer drizzle
+  for colour cameras) and stacking, without writing any intermediate files.
 - **Siril's stacking math.** Additive + scaling normalization, winsorized or sigma-clipping rejection,
   noise / weighted-FWHM / star-count weighting, feathering and max framing, ported from Siril 1.4.
 - **Check before you stack.** FWHM, roundness, star count, background and noise for every sub, one-click
@@ -39,7 +50,7 @@ current driver. AMD, Intel and Mac graphics are not supported.
 
 ## Speed and quality
 
-| Seestar S50, M45, RTX 3060 | Time |
+| Seestar S50 Pro, M45, RTX 3060 | Time |
 |---|---|
 | 906 subs × 60 s (15.1 h), stacking again with new settings | under a minute |
 | The same 906 subs on a first run (star detection, registration, measuring, stacking) | a few minutes |
@@ -54,7 +65,7 @@ On a sequence registered in Siril, GPU Stacker's stack matches Siril's own outpu
 
 <p align="center">
   <img src="docs/images/m45-stack.jpg" width="420" alt="M45 stacked by GPU Stacker"><br>
-  <sub>M45: 906 × 60 s (15.1 h) with a Seestar S50, stacked by GPU Stacker. Auto-stretched, no other
+  <sub>M45: 906 × 60 s (15.1 h) with a Seestar S50 Pro, stacked by GPU Stacker. Auto-stretched, no other
   processing.</sub>
 </p>
 
@@ -89,9 +100,9 @@ run.bat
 
 ## How it works
 
-- **Raw lights.** Stars are found on the 2×2-binned colour data, frames are registered by triangle
+- **Raw lights.** Stars are found on a 2×2-binned copy of each sub, frames are registered by triangle
   matching (mosaic panels are chained through their neighbours), and each sub's raw rows are drizzled
-  onto the canvas on the GPU, one colour at a time, straight from the Bayer pattern.
+  onto the canvas on the GPU (for colour cameras one colour at a time, straight from the Bayer pattern).
 - **Stacking.** The canvas is stacked in strips. For every pixel, the values from all subs are sorted on
   the GPU, then rejected and averaged with Siril's algorithms. Siril's double-precision sums are
   reproduced exactly (as 64-bit fixed point), so the results match Siril's while running at

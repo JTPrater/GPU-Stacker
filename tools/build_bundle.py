@@ -58,12 +58,13 @@ README = """GPU Stacker {version}
 
 GPU Stacker stacks astrophotography subs on an NVIDIA graphics card.
 
-Point it at a folder of raw lights (the Seestar's folder of subs works as it is) and it does the whole
-job: it finds the stars in every sub, registers them (mosaics too), drizzles the colour data straight
-from the camera's Bayer pattern, and combines everything with sigma or winsorized rejection,
-normalization, weighting and feathering. The stacking math is the same as Siril's, so the results are
-the same quality; the graphics card just gets there several times faster. No converted or registered
-copies of your subs are written, only the result (and a cache folder that makes re-stacks fast).
+Point it at a folder of FITS lights from any telescope (a Seestar's folder of subs works as it is) and
+it does the whole job: it finds the stars in every sub, registers them (mosaics too), drizzles them
+(colour cameras straight from their Bayer pattern), and combines everything with sigma or winsorized
+rejection, normalization, weighting and feathering. The stacking math is the same as Siril's, so the
+results are the same quality; the graphics card just gets there several times faster. No converted or
+registered copies of your subs are written, only the result (and a cache folder that makes re-stacks
+fast).
 
 It can also stack a sequence you registered in Siril, and it works from inside Siril as a script
 (see "Using it from Siril" below).
@@ -103,6 +104,9 @@ path in Siril.
 
 Good to know
 ------------
+- Lights: FITS files from colour or mono cameras, one filter per folder. Darks, flats and bias are not
+  applied yet: if your setup needs them, calibrate and register in Siril, then stack the registered
+  sequence with GPU Stacker.
 - Default settings: Bayer drizzle 1x, winsorized rejection 3/3, additive + scaling normalization,
   noise weighting, feather 20.
 - The slow steps' results are cached in a "gpustacker" folder next to your data, so stacking the same

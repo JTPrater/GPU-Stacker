@@ -1,7 +1,7 @@
 [project]
 name = "gpu-stacker"
 version = "1.2.0"
-description = "GPU (CUDA) stacker for raw Seestar lights or Siril-registered sequences: registration, Bayer drizzle, Siril-equivalent rejection stacking, with a desktop UI."
+description = "GPU (CUDA) stacker for FITS lights from any telescope (colour or mono) or Siril-registered sequences: registration, drizzle, Siril-equivalent rejection stacking, with a desktop UI."
 requires-python = ">=3.11"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE", "LICENSES/*.txt", "THIRD-PARTY-NOTICES.txt"]
