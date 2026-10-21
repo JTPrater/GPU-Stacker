@@ -76,7 +76,7 @@ def main():
     w.tabs.setCurrentWidget(w.frames)
     shot("03_frames")
     w.frames.table.selectRow(5)
-    w.frames.metric.setCurrentIndex(2)
+    w.frames.metric_box.setCurrentIndex(2)
     shot("04_frames_stars")
     w.tabs.setCurrentWidget(w.mosaic)
     w.settings_panel.crop.setChecked(True)

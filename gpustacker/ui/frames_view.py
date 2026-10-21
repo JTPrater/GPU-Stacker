@@ -407,9 +407,11 @@ class WorstDialog(QDialog):
         self.setWindowTitle("Exclude worst frames")
         self.session = session
         lay = QVBoxLayout(self)
-        self.metric = Combo()
+        # Never name an attribute after a Qt method: "metric" made PySide treat the combo as an override of
+        # QWidget.metric(), which Qt calls for the screen DPI, so the dialog failed as it opened (issue #1).
+        self.metric_box = Combo()
         for text, key, worse in METRICS:
-            self.metric.addItem(text, (key, worse))
+            self.metric_box.addItem(text, (key, worse))
         self.pct = QDoubleSpinBox()
         self.pct.setRange(0.5, 90)
         self.pct.setValue(5.0)
@@ -420,20 +422,20 @@ class WorstDialog(QDialog):
         row.addWidget(QLabel("Exclude the worst"))
         row.addWidget(self.pct)
         row.addWidget(QLabel("by"))
-        row.addWidget(self.metric, 1)
+        row.addWidget(self.metric_box, 1)
         lay.addLayout(row)
         lay.addWidget(self.info)
         bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         bb.accepted.connect(self.accept)
         bb.rejected.connect(self.reject)
         lay.addWidget(bb)
-        self.metric.currentIndexChanged.connect(self._update)
+        self.metric_box.currentIndexChanged.connect(self._update)
         self.pct.valueChanged.connect(self._update)
         self.result_frames: list[int] = []
         self._update()
 
     def _update(self) -> None:
-        key, worse = self.metric.currentData()
+        key, worse = self.metric_box.currentData()
         frames = self.session.usable_selected()
         vals = [(metric_value(self.session, fr, key), fr.filenum) for fr in frames]
         vals = [(v, n) for v, n in vals if v == v]
@@ -462,16 +464,16 @@ class FramesPanel(QWidget):
         lay.setContentsMargins(8, 8, 8, 8)
         lay.setSpacing(8)
         top = QHBoxLayout()
-        self.metric = Combo()
+        self.metric_box = Combo()
         for text, key, worse in METRICS:
-            self.metric.addItem(text, (key, worse))
+            self.metric_box.addItem(text, (key, worse))
         self.count = QLabel()
         set_role(self.count, "muted")
         legend = QLabel("<span style='color:#4f81bd'>●</span> included &nbsp; "
                         "<span style='color:#a5a5a5'>●</span> excluded &nbsp; "
                         "<span style='color:#c0504d'>●</span> unusable")
         top.addWidget(QLabel("Plot:"))
-        top.addWidget(self.metric)
+        top.addWidget(self.metric_box)
         top.addSpacing(10)
         top.addWidget(legend)
         top.addStretch(1)
@@ -526,7 +528,7 @@ class FramesPanel(QWidget):
         hh.setSectionResizeMode(C_CHECK, QHeaderView.ResizeMode.Fixed)
         lay.addWidget(self.table, 5)
 
-        self.metric.currentIndexChanged.connect(lambda _i: self.chart.set_metric(*self.metric.currentData()))
+        self.metric_box.currentIndexChanged.connect(lambda _i: self.chart.set_metric(*self.metric_box.currentData()))
         self.filter.currentIndexChanged.connect(self.proxy.set_mode)
         self.include_btn.clicked.connect(lambda: self._set_selected(True))
         self.exclude_btn.clicked.connect(lambda: self._set_selected(False))

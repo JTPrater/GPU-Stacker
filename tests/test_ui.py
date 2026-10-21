@@ -151,6 +151,44 @@ def test_lights_folder_analyze_reference_and_test_strip(qapp, window, tmp_path):
     assert window.job_cfg["include_files"] == [s.frame_name(fr) for fr in s.frames if fr.filenum in s.included]
 
 
+def test_exclude_worst_dialog_opens(window, tmp_path):
+    """Issue #1: the dialog's combo was called 'metric', which PySide took for an override of QWidget.metric()."""
+    from gpustacker.ui.frames_view import WorstDialog
+    _open(window, make_sequence(str(tmp_path / "seq"), n=10))
+    dlg = WorstDialog(window.session, window)
+    dlg.show()
+    assert dlg.logicalDpiX() > 0 and window.frames.logicalDpiX() > 0       # Qt asks both for metric() here
+    assert dlg.info.text()
+    dlg.close()
+
+
+def test_ui_attributes_do_not_shadow_qt_methods():
+    """PySide treats an attribute named like a Qt virtual method (metric, event, sizeHint...) as an override."""
+    import ast
+    import glob
+
+    from PySide6 import QtCore, QtGui, QtWidgets
+    qt = {n: getattr(m, n) for m in (QtWidgets, QtGui, QtCore) for n in dir(m)}
+    classes = {}
+    for path in glob.glob(os.path.join(os.path.dirname(__file__), "..", "gpustacker", "ui", "*.py")):
+        for node in ast.walk(ast.parse(open(path, encoding="utf-8").read())):
+            if isinstance(node, ast.ClassDef):
+                attrs = {t.attr for sub in ast.walk(node) if isinstance(sub, (ast.Assign, ast.AnnAssign))
+                         for t in (sub.targets if isinstance(sub, ast.Assign) else [sub.target])
+                         if isinstance(t, ast.Attribute) and isinstance(t.value, ast.Name) and t.value.id == "self"}
+                classes[node.name] = ([b.id for b in node.bases if isinstance(b, ast.Name)], attrs)
+
+    def qt_bases(name):
+        if isinstance(qt.get(name), type):
+            return [qt[name]]
+        return [q for b in classes.get(name, ([], set()))[0] for q in qt_bases(b)]
+
+    hits = {(name, a) for name, (bases, attrs) in classes.items() for a in attrs if not a.startswith("_")
+            for q in qt_bases(name) if callable(getattr(q, a, None))}
+    allowed = {("MainWindow", "depth"), ("MosaicView", "depth")}           # QPaintDevice.depth() is not virtual
+    assert not hits - allowed, sorted(hits - allowed)
+
+
 def test_cancel_from_the_ui(qapp, window, tmp_path):
     _open(window, make_sequence(str(tmp_path / "seq"), n=30, w=160, h=120, canvas=(260, 200)))
     out = str(tmp_path / "cancelled.fit")
